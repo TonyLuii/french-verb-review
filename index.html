@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>French Verb Review</title>
+  <style>
+    :root {
+      --bg-color: #f1f5f9;
+      --card-bg: #ffffff;
+      --border-color: #cbd5e1;
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      
+      --accent-red: #ef4444;
+      --accent-orange: #f97316;
+      --accent-blue: #3b82f6;
+      --accent-green: #10b981;
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+      --border-radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 6px 10px;
+      border-radius: 8px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-sub);
+    }
+
+    .stat-value {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .due-count { color: var(--accent-orange); }
+    .new-count { color: var(--accent-blue); }
+    .mastered-count { color: var(--accent-green); }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    select, button.action-btn {
+      appearance: none;
+      -webkit-appearance: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-main);
+      cursor: pointer;
+      outline: none;
+      transition: all 0.15s ease;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      background-size: 12px;
+      padding-right: 26px;
+    }
+
+    button.action-btn:hover, select:hover {
+      background-color: #f8fafc;
+      border-color: #94a3b8;
+    }
+
+    button.btn-notebook {
+      color: var(--accent-red);
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .card-area {
+      width: 100%;
+      min-height: 240px;
+    }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      padding: 24px 16px 28px 16px;
+      cursor: pointer;
+      user-select: none;
+      text-align: center;
+    }
+
+    .tag-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .bg-High_Frequency_Core { background: #ef4444; }
+    .bg-Common_Intermediate { background: #3b82f6; }
+    .bg-Basic_Expansion { background: #475569; }
+
+    .tts-btn {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .tts-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .word-french {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .word-english {
+      font-size: 1.1rem;
+      color: var(--accent-green);
+      font-weight: 600;
+      min-height: 1.5rem;
+      margin-bottom: 8px;
+    }
+
+    .word-example-container {
+      max-width: 92%;
+      padding: 8px 10px;
+      background: #f8fafc;
+      border-radius: 6px;
+      border-left: 3px solid var(--accent-blue);
+      margin-top: 4px;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+
+    .word-example-fr {
+      font-size: 0.82rem;
+      color: var(--text-main);
+      font-style: italic;
+      line-height: 1.35;
+      font-weight: 500;
+    }
+
+    .word-example-en {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      margin-top: 3px;
+      line-height: 1.3;
+    }
+
+    .hint-text {
+      position: absolute;
+      bottom: 10px;
+      color: var(--text-sub);
+      font-size: 0.75rem;
+    }
+
+    .action-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      width: 100%;
+    }
+
+    .btn-rating {
+      padding: 8px 4px;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-rating span.interval {
+      font-size: 0.65rem;
+      font-weight: 400;
+      opacity: 0.9;
+    }
+
+    .btn-again { background: #ef4444; }
+    .btn-hard { background: #f97316; }
+    .btn-good { background: #3b82f6; }
+    .btn-easy { background: #10b981; }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .empty-state {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      padding: 30px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .empty-state h2 {
+      margin-top: 0;
+      font-size: 1.1rem;
+      color: var(--text-main);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background: #ffffff;
+      width: 90%;
+      max-width: 400px;
+      max-height: 70vh;
+      border-radius: 12px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--text-sub);
+    }
+
+    .modal-body {
+      padding: 8px 16px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .mistake-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .mistake-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .mistake-item:last-child {
+      border-bottom: none;
+    }
+
+    .mistake-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mistake-fr {
+      font-weight: 700;
+      color: var(--text-main);
+      font-size: 0.9rem;
+    }
+
+    .mistake-en {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+    }
+
+    .mistake-badge {
+      font-size: 0.7rem;
+      background: #fef2f2;
+      color: var(--accent-red);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .modal-footer {
+      padding: 10px 16px;
+      border-top: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: flex-end;
+      background: #f8fafc;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>French Verb Review</h1>
+  </header>
+
+  <div class="stats-bar">
+    <div class="stat-card">
+      <span class="stat-label">To Review</span>
+      <span id="due-count" class="stat-value due-count">0</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">New Cards</span>
+      <span id="new-count" class="stat-value new-count">0</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Mastered</span>
+      <span id="mastered-count" class="stat-value mastered-count">0</span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <select id="tag-filter">
+      <option value="ALL">All Groups</option>
+      <option value="High_Frequency_Core">High Frequency Core</option>
+      <option value="Common_Intermediate">Common Intermediate</option>
+      <option value="Basic_Expansion">Basic Expansion</option>
+    </select>
+    <button class="action-btn btn-notebook" id="open-notebook-btn">Review List (<span id="notebook-count">0</span>)</button>
+    <button class="action-btn" id="reset-btn">Reset</button>
+  </div>
+
+  <div id="card-area" class="card-area">
+    <div class="card" id="flashcard">
+      <span class="tag-badge" id="card-tag">Tag</span>
+      <button class="tts-btn" id="tts-btn" title="Listen Pronunciation">🔊</button>
+      <div class="word-french" id="card-french">Loading...</div>
+      <div class="word-english hidden" id="card-english">Meaning</div>
+      
+      <div class="word-example-container hidden" id="card-example-box">
+        <div class="word-example-fr" id="card-example-fr"></div>
+        <div class="word-example-en" id="card-example-en"></div>
+      </div>
+      
+      <div class="hint-text" id="hint-text">Click or press [Space] to show meaning</div>
+    </div>
+  </div>
+
+  <div id="empty-area" class="empty-state hidden">
+    <h2>Review Finished for Today</h2>
+    <p style="color: var(--text-sub); margin: 0; font-size: 0.85rem;">No cards due for review under the selected group.</p>
+  </div>
+
+  <div class="action-buttons hidden" id="rating-controls">
+    <button class="btn-rating btn-again" data-quality="1">
+      Again (1)
+      <span class="interval">&lt; 1 min</span>
+    </button>
+    <button class="btn-rating btn-hard" data-quality="2">
+      Hard (2)
+      <span class="interval" id="int-hard">1d</span>
+    </button>
+    <button class="btn-rating btn-good" data-quality="3">
+      Good (3)
+      <span class="interval" id="int-good">2d</span>
+    </button>
+    <button class="btn-rating btn-easy" data-quality="4">
+      Easy (4)
+      <span class="interval" id="int-easy">4d</span>
+    </button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="notebook-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Review List</h2>
+      <button class="close-btn" id="close-modal-btn">&times;</button>
+    </div>
+    <div class="modal-body">
+      <ul class="mistake-list" id="mistake-list-container"></ul>
+    </div>
+    <div class="modal-footer">
+      <button class="action-btn" id="close-modal-footer-btn">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const rawData = [
+  ["ÊTRE", "BE", "High_Frequency_Core", "Je suis étudiant à Paris.", "I am a student in Paris."],
+  ["ALLER", "GO", "High_Frequency_Core", "Nous allons au cinéma ce soir.", "We are going to the cinema tonight."],
+  ["VENIR", "COME", "High_Frequency_Core", "Il vient de terminer son travail.", "He has just finished his work."],
+  ["RENTRER", "GO BACK HOME", "High_Frequency_Core", "Elle rentre à la maison à 18h.", "She goes back home at 6 PM."],
+  ["RETOURNER", "GO BACK", "High_Frequency_Core", "Je dois retourner au bureau.", "I have to go back to the office."],
+  ["SORTIR", "GO OUT", "High_Frequency_Core", "Ils sortent ensemble ce week-end.", "They are going out together this weekend."],
+  ["PARTIR", "LEAVE", "High_Frequency_Core", "Le train part dans dix minutes.", "The train leaves in ten minutes."],
+  ["RESTER", "STAY", "High_Frequency_Core", "Je reste chez moi aujourd'hui.", "I am staying at home today."],
+  ["MANGER", "EAT", "High_Frequency_Core", "Qu'est-ce que tu manges ce midi ?", "What are you eating for lunch?"],
+  ["BOIRE", "DRINK", "High_Frequency_Core", "Voulez-vous boire un café ?", "Would you like to drink a coffee?"],
+  ["PRENDRE LE PETIT DÉJEUNER", "HAVE BREAKFAST", "High_Frequency_Core", "Je prends le petit déjeuner à 7h.", "I have breakfast at 7 AM."],
+  ["DÉJEUNER", "HAVE LUNCH", "High_Frequency_Core", "Nous déjeunons ensemble.", "We are having lunch together."],
+  ["DÎNER", "HAVE DINNER", "High_Frequency_Core", "Ils dînent au restaurant.", "They are having dinner at the restaurant."],
+  ["CUISINER", "COOK", "High_Frequency_Core", "J'aime cuisiner des plats italiens.", "I like to cook Italian dishes."],
+  ["ACHETER", "BUY", "High_Frequency_Core", "Elle achète des légumes frais.", "She buys fresh vegetables."],
+  ["FAIRE", "DO / MAKE", "High_Frequency_Core", "Que fais-tu ce week-end ?", "What are you doing this weekend?"],
+  ["PRENDRE", "TAKE", "High_Frequency_Core", "Prenez ce bus pour aller au centre.", "Take this bus to go to the center."],
+  ["METTRE", "PUT / PUT ON", "High_Frequency_Core", "Il met son manteau noir.", "He puts on his black coat."],
+  ["ALLER EN VOITURE À", "DRIVE TO", "High_Frequency_Core", "Je vais en voiture au travail.", "I drive to work."],
+  ["TRAVAILLER", "WORK", "High_Frequency_Core", "Elle travaille dans une grande entreprise.", "She works in a large company."],
+  ["ÉTUDIER", "STUDY", "High_Frequency_Core", "J'étudie le français depuis un an.", "I have been studying French for a year."],
+  ["APPRENDRE", "LEARN", "High_Frequency_Core", "Il apprend à conduire.", "He is learning to drive."],
+  ["LIRE", "READ", "High_Frequency_Core", "Elle lit un livre passionnant.", "She is reading an exciting book."],
+  ["AIMER", "LIKE / LOVE", "High_Frequency_Core", "J'aime beaucoup la musique classique.", "I really like classical music."],
+  ["HABITER", "LIVE", "High_Frequency_Core", "J'habite à Lyon.", "I live in Lyon."],
+  ["VOIR", "SEE", "High_Frequency_Core", "Je vois mes amis ce soir.", "I am seeing my friends tonight."],
+  ["DORMIR", "SLEEP", "High_Frequency_Core", "Les enfants dorment déjà.", "The children are already sleeping."],
+  ["NAGER", "SWIM", "High_Frequency_Core", "Nous nageons dans la piscine.", "We are swimming in the pool."],
+  ["JOUER", "PLAY", "High_Frequency_Core", "Il joue du piano tous les jours.", "He plays the piano every day."],
+  ["DANSER", "DANCE", "High_Frequency_Core", "Voulez-vous danser avec moi ?", "Would you like to dance with me?"],
+  ["VOYAGER", "TRAVEL", "High_Frequency_Core", "J'adore voyager en Europe.", "I love traveling in Europe."],
+  ["PARTIR EN VOYAGE", "TRAVEL", "High_Frequency_Core", "Ils partent en voyage en Italie.", "They are leaving on a trip to Italy."],
+  ["VISITER", "VISIT A PLACE", "High_Frequency_Core", "Nous visitons le musée du Louvre.", "We are visiting the Louvre museum."],
+  ["RENDRE VISITE / ALLER VOIR", "VISIT SOMEONE", "High_Frequency_Core", "Je vais rendre visite à mes grands-parents.", "I am going to visit my grandparents."],
+  ["APPELER / TÉLÉPHONER À", "MAKE A CALL", "High_Frequency_Core", "N'oublie pas de téléphoner à Marie.", "Don't forget to call Marie."],
+  ["PRENDRE UN VERRE", "HAVE A DRINK", "High_Frequency_Core", "On va prendre un verre après le travail ?", "Shall we go have a drink after work?"],
+  ["FAIRE LES DEVOIRS", "DO HOMEWORK", "High_Frequency_Core", "L'étudiant fait ses devoirs.", "The student is doing his homework."],
+  ["FAIRE LES MAGASINS", "DO SOME SHOPPING", "High_Frequency_Core", "Elles font les magasins le samedi.", "They go shopping on Saturdays."],
+  ["FAIRE DU SPORT", "DO SOME SPORT", "High_Frequency_Core", "Il fait du sport trois fois par semaine.", "He does sports three times a week."],
+  ["FAIRE LA FÊTE", "PARTY", "High_Frequency_Core", "Nous faisons la fête ce soir !", "We are partying tonight!"],
+  ["REGARDER LA TÉLÉ", "WATCH TV", "High_Frequency_Core", "Il regarde la télé après le dîner.", "He watches TV after dinner."],
+  ["ARRIVER", "ARRIVE", "Common_Intermediate", "Le train arrive à l'heure.", "The train arrives on time."],
+  ["COMMENCER", "BEGIN / START", "Common_Intermediate", "Le cours commence à 9 heures.", "The class starts at 9 o'clock."],
+  ["APPORTER", "BRING SOMETHING", "Common_Intermediate", "Apporte du pain, s'il te plaît.", "Bring some bread, please."],
+  ["AMENER", "BRING SOMEONE", "Common_Intermediate", "J'amène mon ami à la fête.", "I am bringing my friend to the party."],
+  ["SURFER INTERNET", "BROWSE THE INTERNET", "Common_Intermediate", "Je surfe sur Internet tous les soirs.", "I surf the internet every evening."],
+  ["APPELER", "CALL, MAKE A CALL", "Common_Intermediate", "Comment vous vous appelez ?", "What is your name?"],
+  ["CHANGER", "CHANGE", "Common_Intermediate", "Il faut changer de train à Paris.", "We need to change trains in Paris."],
+  ["BAVARDER", "CHAT", "Common_Intermediate", "Elles bavardent dans la cuisine.", "They are chatting in the kitchen."],
+  ["FERMER", "CLOSE", "Common_Intermediate", "N'oublie pas de fermer la porte.", "Don't forget to close the door."],
+  ["REVENIR", "COME BACK", "Common_Intermediate", "Je reviens dans cinq minutes.", "I will be back in five minutes."],
+  ["FAIRE LA CUISINE", "COOK", "Common_Intermediate", "Mon père fait la cuisine ce soir.", "My father is cooking tonight."],
+  ["FAIRE LES COURSES", "DO GROCERIES", "Common_Intermediate", "Je fais les courses au supermarché.", "I am doing grocery shopping at the supermarket."],
+  ["FAIRE DU BRICOLAGE", "DO DIY", "Common_Intermediate", "Il aime faire du bricolage le dimanche.", "He likes doing DIY on Sundays."],
+  ["FAIRE LE MÉNAGE", "DO HOUSEWORK", "Common_Intermediate", "Nous faisons le ménage ensemble.", "We are doing housework together."],
+  ["FAIRE DE LA PHOTOGRAPHIE", "DO PHOTOGRAPHY", "Common_Intermediate", "Elle fait de la photographie la nuit.", "She does photography at night."],
+  ["FAIRE DU THÉÂTRE", "DO SOME ACTING", "Common_Intermediate", "Mon frère fait du théâtre depuis 2 ans.", "My brother has been doing theater for 2 years."],
+  ["FAIRE DU JOGGING", "DO JOGGING", "Common_Intermediate", "Je fais du jogging chaque matin.", "I go jogging every morning."],
+  ["TÉLÉCHARGER", "DOWNLOAD", "Common_Intermediate", "Je télécharge un nouveau document.", "I am downloading a new document."],
+  ["DESSINER", "DRAW", "Common_Intermediate", "L'enfant dessine un chat.", "The child is drawing a cat."],
+  ["CONDUIRE", "DRIVE", "Common_Intermediate", "Il conduit très prudemment.", "He drives very carefully."],
+  ["PASSER", "DRIVE BY / DROP BY", "Common_Intermediate", "Je passe chez toi ce soir.", "I am dropping by your place tonight."],
+  ["PRENDRE L'AVION", "FLY", "Common_Intermediate", "Nous prenons l'avion pour Nice.", "We are taking a plane to Nice."],
+  ["TERMINER", "FINISH", "Common_Intermediate", "J'ai terminé mon travail.", "I have finished my work."],
+  ["DONNER", "GIVE", "Common_Intermediate", "Donne-moi ton numéro de téléphone.", "Give me your phone number."],
+  ["DESCENDRE", "GO DOWN", "Common_Intermediate", "Il descend l'escalier rapidement.", "He goes down the stairs quickly."],
+  ["FAIRE UNE PROMENADE", "GO FOR A WALK", "Common_Intermediate", "Nous faisons une promenade dans le parc.", "We are taking a walk in the park."],
+  ["ALLER AU LIT", "GO TO BED", "Common_Intermediate", "Il est tard, je vais au lit.", "It's late, I'm going to bed."],
+  ["FAIRE LE MARCHÉ", "GO TO WET MARKET", "Common_Intermediate", "Ma mère fait le marché le matin.", "My mother goes to the market in the morning."],
+  ["ÉCOUTER", "LISTEN", "Common_Intermediate", "J'écoute de la musique en travaillant.", "I listen to music while working."],
+  ["CHERCHER", "LOOK FOR", "Common_Intermediate", "Je cherche mes clés partout.", "I am looking for my keys everywhere."],
+  ["RENCONTRER / VOIR", "MEET", "Common_Intermediate", "J'ai rencontré un ami par hasard.", "I met a friend by chance."],
+  ["OUVRIR", "OPEN", "Common_Intermediate", "Pouvez-vous ouvrir la fenêtre ?", "Can you open the window?"],
+  ["COMMANDER", "ORDER", "Common_Intermediate", "Nous commandons une pizza.", "We are ordering a pizza."],
+  ["FAIRE LES BAGAGES", "PACK", "Common_Intermediate", "Je fais mes bagages pour le voyage.", "I am packing my bags for the trip."],
+  ["PAYER", "PAY", "Common_Intermediate", "Je vais payer par carte bancaire.", "I will pay by credit card."],
+  ["PRENDRE / ALLER CHERCHER", "PICK UP SOMEONE", "Common_Intermediate", "Je vais chercher mon fils à l'école.", "I am going to pick up my son from school."],
+  ["DIRE", "SAY", "Common_Intermediate", "Que dis-tu de cette idée ?", "What do you say about this idea?"],
+  ["CHANTER", "SING", "Common_Intermediate", "Elle chante très bien.", "She sings very well."],
+  ["PARLER", "SPEAK / TALK", "Common_Intermediate", "Parlez-vous français ?", "Do you speak French?"],
+  ["FAIRE DES ÉTUDES À", "STUDY AT", "Common_Intermediate", "Elle fait des études à la Sorbonne.", "She studies at the Sorbonne."],
+  ["PRENDRE SOIN DE", "TAKE CARE", "Common_Intermediate", "Prenez soin de vous !", "Take care of yourself!"],
+  ["PRENDRE DES PHOTOS", "TAKE PICTURES", "Common_Intermediate", "J'adore prendre des photos pendant les vacances.", "I love taking pictures during holidays."],
+  ["GOUTER, ESSAYER", "TASTE", "Common_Intermediate", "Goûtez ce vin, il est délicieux.", "Taste this wine, it is delicious."],
+  ["RACONTER", "TELL", "Common_Intermediate", "Raconte-moi une histoire.", "Tell me a story."],
+  ["REMERCIER", "THANK", "Common_Intermediate", "Je vous remercie pour votre aide.", "I thank you for your help."],
+  ["COMPRENDRE", "UNDERSTAND", "Common_Intermediate", "Je comprends parfaitement.", "I understand perfectly."],
+  ["METTRE À JOUR", "UPDATE", "Common_Intermediate", "Il faut mettre à jour le logiciel.", "We need to update the software."],
+  ["UTILISER", "USE", "Common_Intermediate", "J'utilise cet ordinateur tous les jours.", "I use this computer every day."],
+  ["ATTENDRE", "WAIT", "Common_Intermediate", "J'attends le bus depuis dix minutes.", "I have been waiting for the bus for ten minutes."],
+  ["ÉCRIRE", "WRITE", "Common_Intermediate", "Il écrit une lettre à sa famille.", "He is writing a letter to his family."],
+  ["AJOUTER", "ADD", "Basic_Expansion", "Ajoutez un peu de sel dans la soupe.", "Add a little salt to the soup."],
+  ["CONSEILLER", "ADVISE", "Basic_Expansion", "Je vous conseille de réserver à l'avance.", "I advise you to book in advance."],
+  ["RÉPONDRE", "ANSWER", "Basic_Expansion", "Il n'a pas répondu à mon message.", "He did not reply to my message."],
+  ["RANGER", "ARRANGE", "Basic_Expansion", "Range ta chambre, s'il te plaît.", "Tidy up your room, please."],
+  ["ARRÊTER", "ARREST", "Basic_Expansion", "Arrêtez de faire du bruit.", "Stop making noise."],
+  ["DEMANDER", "ASK", "Basic_Expansion", "Je demande une explication.", "I am asking for an explanation."],
+  ["ÉVITER", "AVOID", "Basic_Expansion", "Évitez de sortir pendant l'orage.", "Avoid going out during the storm."],
+  ["MARCHANDER", "BARGAIN", "Basic_Expansion", "Il aime marchander au marché.", "He likes to bargain at the market."],
+  ["DEVENIR", "BECOME", "Basic_Expansion", "Il veut devenir médecin.", "He wants to become a doctor."],
+  ["CROIRE", "BELIEVE", "Basic_Expansion", "Je crois qu'il a raison.", "I believe he is right."],
+  ["EMPRUNTER", "BORROW", "Basic_Expansion", "J'ai emprunté ce livre à la bibliothèque.", "I borrowed this book from the library."],
+  ["RÉSERVER", "BOOK", "Basic_Expansion", "J'ai réservé une table pour deux.", "I have booked a table for two."],
+  ["CASSER", "BREAK", "Basic_Expansion", "Attention à ne pas casser ce verre.", "Be careful not to break this glass."],
+  ["RAPPORTER", "BRING BACK SOMETHING", "Basic_Expansion", "Rapporte-moi des souvenirs de voyage.", "Bring me back some travel souvenirs."],
+  ["RAMENER", "BRING BACK SOMEONE", "Basic_Expansion", "Je vais te ramener à la maison.", "I will take you back home."],
+  ["CONSTRUIRE", "BUILD", "Basic_Expansion", "Ils construisent une nouvelle maison.", "They are building a new house."],
+  ["BRULER", "BURN", "Basic_Expansion", "Le bois brûle dans la cheminée.", "The wood is burning in the fireplace."],
+  ["ANNULER", "CANCEL", "Basic_Expansion", "Il a dû annuler son rendez-vous.", "He had to cancel his appointment."],
+  ["PORTER", "CARRY", "Basic_Expansion", "Cette valise est lourde à porter.", "This suitcase is heavy to carry."],
+  ["ATTRAPER", "CATCH", "Basic_Expansion", "J'ai attrapé un froid hier.", "I caught a cold yesterday."],
+  ["CÉLÈBRER", "CELEBRATE", "Basic_Expansion", "Nous célébrons son anniversaire.", "We are celebrating her birthday."],
+  ["CHOISIR", "CHOOSE", "Basic_Expansion", "Quel plat choisissez-vous ?", "Which dish do you choose?"],
+  ["NETTOYER", "CLEAN", "Basic_Expansion", "Il nettoie sa voiture le samedi.", "He cleans his car on Saturdays."],
+  ["MONTER / ESCALADER", "CLIMB", "Basic_Expansion", "Ils escaladent la montagne.", "They are climbing the mountain."],
+  ["CONTINUER", "CONTINUE", "Basic_Expansion", "Continuez tout droit pendant 200 mètres.", "Continue straight ahead for 200 meters."],
+  ["CONTROLER", "CONTROL", "Basic_Expansion", "La police contrôle les billets.", "The police are checking the tickets."],
+  ["CORRIGER", "CORRECT", "Basic_Expansion", "Le professeur corrige les fautes.", "The teacher corrects the mistakes."],
+  ["COUTER", "COST", "Basic_Expansion", "Combien coûte ce livre ?", "How much does this book cost?"],
+  ["COMPTER", "COUNT", "Basic_Expansion", "L'enfant apprend à compter.", "The child is learning to count."],
+  ["CRÉER", "CREATE", "Basic_Expansion", "L'artiste a créé une nouvelle œuvre.", "The artist created a new artwork."],
+  ["COUPER", "CUT", "Basic_Expansion", "Il coupe du pain avec un couteau.", "He is cutting bread with a knife."],
+  ["GUÉRIR", "CURE", "Basic_Expansion", "Le médicament va le guérir rapidement.", "The medicine will cure him quickly."],
+  ["PLEURER", "CRY", "Basic_Expansion", "Pourquoi pleures-tu ?", "Why are you crying?"],
+  ["DÉCIDER", "DECIDE", "Basic_Expansion", "J'ai décidé de changer de travail.", "I have decided to change jobs."],
+  ["DÉCRIRE", "DESCRIBE", "Basic_Expansion", "Pouvez-vous décrire le suspect ?", "Can you describe the suspect?"],
+  ["MOURIR", "DIE", "Basic_Expansion", "Les fleurs meurent sans eau.", "Flowers die without water."],
+  ["DÉTESTER", "DISLIKE", "Basic_Expansion", "Je déteste les embouteillages.", "I hate traffic jams."],
+  ["DÉCOUVRIR", "DISCOVER", "Basic_Expansion", "J'ai découvert une belle ville.", "I discovered a beautiful city."],
+  ["PLONGER / FAIRE DE LA PLONGÉE", "DIVE", "Basic_Expansion", "Il aime plonger dans l'océan.", "He likes diving in the ocean."],
+  ["FAIRE AU MIEUX", "DO THE BEST", "Basic_Expansion", "Je vais faire au mieux pour réussir.", "I will do my best to succeed."],
+  ["FAIRE LA VAISSELLE", "DO THE DISHES", "Basic_Expansion", "C'est mon tour de faire la vaisselle.", "It's my turn to do the dishes."],
+  ["FAIRE LA LESSIVE", "DO THE LAUNDRY", "Basic_Expansion", "Elle fait la lessive le week-end.", "She does the laundry on weekends."],
+  ["ENTRER", "ENTER", "Basic_Expansion", "Vous pouvez entrer, c'est ouvert.", "You may enter, it is open."],
+  ["EFFACER", "ERASE", "Basic_Expansion", "Efface le tableau, s'il te plaît.", "Erase the board, please."],
+  ["FAIRE L'EXPERIENCE DE", "EXPERIENCE", "Basic_Expansion", "Il a fait l'expérience de la solitude.", "He experienced loneliness."],
+  ["EXPLIQUER", "EXPLAIN", "Basic_Expansion", "Pouvez-vous m'expliquer cette règle ?", "Can you explain this rule to me?"],
+  ["EXPLORE", "EXPLORE", "Basic_Expansion", "Nous explorons les environs de la ville.", "We are exploring the surroundings of the city."],
+  ["ÉCHOUER", "FAIL", "Basic_Expansion", "Il a échoué à son examen.", "He failed his exam."],
+  ["REMPLIR", "FILL OUT, FILL UP", "Basic_Expansion", "Veuillez remplir ce formulaire.", "Please fill out this form."],
+  ["TROUVER", "FIND", "Basic_Expansion", "J'ai trouvé une solution.", "I found a solution."],
+  ["PÊCHER", "FISH", "Basic_Expansion", "Mon grand-père aime pêcher au lac.", "My grandfather likes fishing at the lake."],
+  ["RÉPARER", "FIX", "Basic_Expansion", "Le mécanicien répare ma voiture.", "The mechanic is fixing my car."],
+  ["SUIVRE", "FOLLOW", "Basic_Expansion", "Suivez-moi, s'il vous plaît.", "Follow me, please."],
+  ["INTERDIRE", "FORBID", "Basic_Expansion", "Il est interdit de fumer ici.", "It is forbidden to smoke here."],
+  ["OUBLIER", "FORGET", "Basic_Expansion", "J'ai oublié mes lunettes à la maison.", "I forgot my glasses at home."],
+  ["PARDONNER", "FORGIVE", "Basic_Expansion", "Pardonnez-moi pour ce retard.", "Forgive me for being late."],
+  ["OBTENIR", "GET", "Basic_Expansion", "Il a obtenu son diplôme le mois dernier.", "He obtained his diploma last month."],
+  ["RENDRE", "GIVE BACK, RETURN", "Basic_Expansion", "N'oublie pas de lui rendre son livre.", "Don't forget to return his book to him."],
+  ["MONTER", "GO UP", "Basic_Expansion", "Nous montons au troisième étage.", "We are going up to the third floor."],
+  ["INVITER", "INVITE", "Basic_Expansion", "Je veux t'inviter à mon anniversaire.", "I want to invite you to my birthday."],
+  ["SAUTER", "JUMP", "Basic_Expansion", "Le chien saute par-dessus la barrière.", "The dog jumps over the fence."],
+  ["EMBRASSER", "KISS", "Basic_Expansion", "Il embrasse sa mère avant de partir.", "He kisses his mother before leaving."],
+  ["FAIRE LA BISE", "KISS HELLO", "Basic_Expansion", "En France, on fait la bise pour se saluer.", "In France, people kiss on the cheek to greet."],
+  ["RIRE", "LAUGH", "Basic_Expansion", "Cette histoire me fait rire.", "This story makes me laugh."],
+  ["PERDRE", "LOSE", "Basic_Expansion", "J'ai perdu mes clés de voiture.", "I lost my car keys."],
+  ["MAIGRIR", "LOSE WEIGHT", "Basic_Expansion", "Elle a maigri de trois kilos.", "She lost three kilos."],
+  ["FAIRE UNE RÉCLAMATION", "MAKE A COMPLAINT", "Basic_Expansion", "Le client fait une réclamation.", "The customer is making a complaint."],
+  ["FAIRE UN CADEAU", "MAKE A GIFT", "Basic_Expansion", "Je veux lui faire un cadeau original.", "I want to give her an original gift."],
+  ["FAIRE DEMI-TOUR", "MAKE A U-TURN", "Basic_Expansion", "Nous avons dû faire demi-tour sur la route.", "We had to make a U-turn on the road."],
+  ["FAIRE DES PROJETS", "MAKE PLANS", "Basic_Expansion", "Nous faisons des projets pour l'été prochain.", "We are making plans for next summer."],
+  ["GÉRER", "MANAGE", "Basic_Expansion", "Elle gère une équipe de dix personnes.", "She manages a team of ten people."],
+  ["MESURER", "MESURE", "Basic_Expansion", "Il mesure un mètre quatre-vingts.", "He is one meter eighty tall."],
+  ["APPRENDRE PAR CŒUR", "MEMORIZE", "Basic_Expansion", "J'apprends ce texte par cœur.", "I am memorizing this text."],
+  ["MÉLANGER", "MIX", "Basic_Expansion", "Mélangez le sucre et les œufs.", "Mix the sugar and eggs."],
+  ["RATER", "MISS", "Basic_Expansion", "J'ai raté le bus ce matin.", "I missed the bus this morning."],
+  ["EMMÉNAGER", "MOVE IN", "Basic_Expansion", "Nous emménageons dans notre nouvel appartement.", "We are moving into our new apartment."],
+  ["DÉMÉNAGER", "MOVE OUT", "Basic_Expansion", "Ils vont déménager la semaine prochaine.", "They are going to move out next week."],
+  ["POSSÉDER", "OWN", "Basic_Expansion", "Il possède une belle maison à la campagne.", "He owns a beautiful house in the countryside."],
+  ["PASSER", "PASS", "Basic_Expansion", "Passe-moi le sel, s'il te plaît.", "Pass me the salt, please."],
+  ["FAIRE ATTENTION", "PAY ATTENTION", "Basic_Expansion", "Faites attention en traversant la rue.", "Pay attention when crossing the street."],
+  ["PRIER", "PRAY", "Basic_Expansion", "Elles prient dans l'église.", "They are praying in the church."],
+  ["PROPOSER", "PROPOSE", "Basic_Expansion", "Je vous propose une autre solution.", "I propose another solution to you."],
+  ["CONSEILLER", "RECOMMEND", "Basic_Expansion", "Le médecin conseille de se reposer.", "The doctor recommends resting."],
+  ["REFAIRE", "REDO", "Basic_Expansion", "Il faut refaire cet exercice.", "We need to redo this exercise."],
+  ["LOUER", "RENT", "Basic_Expansion", "Nous louons un appartement pour les vacances.", "We rent an apartment for the holidays."],
+  ["RECOMMENCER", "RESTART", "Basic_Expansion", "On recommence depuis le début.", "We are starting over from the beginning."],
+  ["FAIRE DU VÉLO", "RIDE A BICYCLE", "Basic_Expansion", "Les enfants font du vélo dans le parc.", "The children ride bikes in the park."],
+  ["FAIRE DES ÉCONOMIES", "SAVE MONEY", "Basic_Expansion", "J'essaie de faire des économies.", "I am trying to save money."],
+  ["VENDRE", "SELL", "Basic_Expansion", "Il vend sa vieille voiture.", "He is selling his old car."],
+  ["ENVOYER", "SEND", "Basic_Expansion", "J'ai envoyé un e-mail au client.", "I sent an email to the client."],
+  ["SERVIR", "SERVE", "Basic_Expansion", "Le restaurant sert jusqu'à 22 heures.", "The restaurant serves until 10 PM."],
+  ["MONTRER", "SHOW", "Basic_Expansion", "Montre-moi tes photos de vacances.", "Show me your holiday photos."],
+  ["FAIRE LA GRASSE MATINÉE", "WAKE UP LATE", "Basic_Expansion", "J'adore faire la grasse matinée le dimanche.", "I love sleeping in on Sundays."],
+  ["SOURIRE", "SMILE", "Basic_Expansion", "Elle sourit toujours aux clients.", "She always smiles at customers."],
+  ["PASSER DU TEMPS", "SPEND TIME", "Basic_Expansion", "J'aime passer du temps avec ma famille.", "I like spending time with my family."],
+  ["FAIRE LA QUEUE", "STAND IN LINE", "Basic_Expansion", "Il faut faire la queue pour acheter des billets.", "You have to stand in line to buy tickets."],
+  ["REPRENDRE", "TAKE AGAIN", "Basic_Expansion", "Je reprends un peu de gâteau.", "I am taking a bit more cake."],
+  ["FAIRE LA SIESTE", "TAKE A NAP", "Basic_Expansion", "Mon grand-père fait la sieste chaque après-midi.", "My grandfather takes a nap every afternoon."],
+  ["PRENDRE UNE DOUCHE", "TAKE A SHOWER", "Basic_Expansion", "Je prends une douche tous les matins.", "I take a shower every morning."],
+  ["FAIRE UN VOYAGE", "TAKE A TRIP", "Basic_Expansion", "Ils vont faire un voyage au Japon.", "They are going to take a trip to Japan."],
+  ["FAIRE UN TOUR", "TAKE A RIDE", "Basic_Expansion", "Allons faire un tour en ville.", "Let's go for a ride in town."],
+  ["ENSEIGNER", "TEACH", "Basic_Expansion", "Elle enseigne l'anglais au lycée.", "She teaches English in high school."],
+  ["ESSAYER", "TRY", "Basic_Expansion", "Essayez ce pantalon, il est à votre taille.", "Try these pants, they are your size."],
+  ["TOURNER", "TURN", "Basic_Expansion", "Tournez à gauche au prochain croisement.", "Turn left at the next intersection."],
+  ["MARCHER", "WALK", "Basic_Expansion", "Nous marchons au bord de la mer.", "We are walking by the seaside."],
+  ["LAVER", "WASH", "Basic_Expansion", "Lave-toi les mains avant de manger.", "Wash your hands before eating."],
+  ["GAGNER", "WIN / EARN", "Basic_Expansion", "Notre équipe a gagné le match.", "Our team won the match."]
+];
+
+const LOCAL_STORAGE_KEY = "anki_french_verbs_data";
+
+let cards = [];
+let currentCard = null;
+let isAnswerRevealed = false;
+
+function initializeData() {
+  const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+  if (savedData) {
+    cards = JSON.parse(savedData);
+  } else {
+    cards = rawData.map((item, index) => ({
+      id: index,
+      french: item[0],
+      english: item[1],
+      tag: item[2],
+      exampleFr: item[3] || "",
+      exampleEn: item[4] || "",
+      interval: 0,
+      repetitions: 0,
+      easeFactor: 2.5,
+      dueDate: Date.now(),
+      againCount: 0
+    }));
+    saveState();
+  }
+}
+
+function saveState() {
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cards));
+}
+
+function speakFrench(text) {
+  if (!('speechSynthesis' in window)) return;
+  const cleanText = text.replace(/\//g, " ou ");
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(cleanText);
+  utterance.lang = 'fr-FR';
+  utterance.rate = 0.9;
+  
+  const voices = window.speechSynthesis.getVoices();
+  const frVoice = voices.find(v => v.lang.startsWith('fr'));
+  if (frVoice) {
+    utterance.voice = frVoice;
+  }
+  
+  window.speechSynthesis.speak(utterance);
+}
+
+function calculateNextReview(card, quality) {
+  let { interval, repetitions, easeFactor, againCount = 0 } = card;
+
+  if (quality === 1) {
+    againCount += 1;
+  }
+
+  if (quality >= 3) {
+    if (repetitions === 0) {
+      interval = 1;
+    } else if (repetitions === 1) {
+      interval = 6;
+    } else {
+      interval = Math.round(interval * easeFactor);
+    }
+    repetitions++;
+  } else {
+    repetitions = 0;
+    interval = 1;
+  }
+
+  easeFactor = easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+  if (easeFactor < 1.3) easeFactor = 1.3;
+
+  const dayInMs = 24 * 60 * 60 * 1000;
+  const nextDueDate = Date.now() + (quality === 1 ? 60 * 1000 : interval * dayInMs);
+
+  return {
+    ...card,
+    interval,
+    repetitions,
+    easeFactor,
+    againCount,
+    dueDate: nextDueDate
+  };
+}
+
+function getIntervalText(card, quality) {
+  if (quality === 1) return "< 1 min";
+  const updated = calculateNextReview(card, quality);
+  return `${updated.interval}d`;
+}
+
+function getDueCards() {
+  const selectedTag = document.getElementById("tag-filter").value;
+  const now = Date.now();
+  return cards.filter(card => {
+    const matchTag = (selectedTag === "ALL" || card.tag === selectedTag);
+    return matchTag && card.dueDate <= now;
+  });
+}
+
+function updateStats() {
+  const selectedTag = document.getElementById("tag-filter").value;
+  const filteredCards = cards.filter(c => selectedTag === "ALL" || c.tag === selectedTag);
+  
+  const now = Date.now();
+  const due = filteredCards.filter(c => c.dueDate <= now).length;
+  const newCards = filteredCards.filter(c => c.repetitions === 0).length;
+  const mastered = filteredCards.filter(c => c.repetitions > 3).length;
+  const mistakes = filteredCards.filter(c => (c.againCount > 0 || c.repetitions === 0) && c.repetitions <= 3).length;
+
+  document.getElementById("due-count").innerText = due;
+  document.getElementById("new-count").innerText = newCards;
+  document.getElementById("mastered-count").innerText = mastered;
+  document.getElementById("notebook-count").innerText = mistakes;
+}
+
+function loadNextCard() {
+  isAnswerRevealed = false;
+  const dueCards = getDueCards();
+  
+  updateStats();
+
+  if (dueCards.length === 0) {
+    document.getElementById("card-area").classList.add("hidden");
+    document.getElementById("rating-controls").classList.add("hidden");
+    document.getElementById("empty-area").classList.remove("hidden");
+    currentCard = null;
+    return;
+  }
+
+  document.getElementById("card-area").classList.remove("hidden");
+  document.getElementById("empty-area").classList.add("hidden");
+  document.getElementById("rating-controls").classList.add("hidden");
+
+  currentCard = dueCards[Math.floor(Math.random() * dueCards.length)];
+
+  document.getElementById("card-french").innerText = currentCard.french;
+  document.getElementById("card-english").innerText = currentCard.english;
+  document.getElementById("card-english").classList.add("hidden");
+  
+  const exampleBox = document.getElementById("card-example-box");
+  exampleBox.classList.add("hidden");
+  document.getElementById("card-example-fr").innerText = "";
+  document.getElementById("card-example-en").innerText = "";
+  
+  const tagBadge = document.getElementById("card-tag");
+  tagBadge.innerText = currentCard.tag.replace(/_/g, " ");
+  tagBadge.className = `tag-badge bg-${currentCard.tag}`;
+  
+  document.getElementById("hint-text").innerText = "Click or press [Space] to show meaning";
+
+  speakFrench(currentCard.french);
+}
+
+function revealAnswer() {
+  if (!currentCard || isAnswerRevealed) return;
+  isAnswerRevealed = true;
+
+  document.getElementById("card-english").classList.remove("hidden");
+  document.getElementById("hint-text").innerText = "Select rating (1-4)";
+  document.getElementById("rating-controls").classList.remove("hidden");
+
+  document.getElementById("int-hard").innerText = getIntervalText(currentCard, 2);
+  document.getElementById("int-good").innerText = getIntervalText(currentCard, 3);
+  document.getElementById("int-easy").innerText = getIntervalText(currentCard, 4);
+
+  if (currentCard.exampleFr) {
+    const exampleBox = document.getElementById("card-example-box");
+    document.getElementById("card-example-fr").innerText = `Ex: ${currentCard.exampleFr}`;
+    document.getElementById("card-example-en").innerText = currentCard.exampleEn ? `(${currentCard.exampleEn})` : "";
+    exampleBox.classList.remove("hidden");
+  }
+}
+
+function handleRating(quality) {
+  if (!currentCard) return;
+
+  const updatedCard = calculateNextReview(currentCard, quality);
+  const index = cards.findIndex(c => c.id === currentCard.id);
+  if (index !== -1) {
+    cards[index] = updatedCard;
+    saveState();
+  }
+
+  loadNextCard();
+}
+
+function renderNotebook() {
+  const selectedTag = document.getElementById("tag-filter").value;
+  const container = document.getElementById("mistake-list-container");
+  container.innerHTML = "";
+
+  const mistakeCards = cards.filter(c => {
+    const matchTag = (selectedTag === "ALL" || c.tag === selectedTag);
+    const isUnmastered = (c.againCount > 0 || c.repetitions === 0) && c.repetitions <= 3;
+    return matchTag && isUnmastered;
+  });
+
+  if (mistakeCards.length === 0) {
+    container.innerHTML = '<li style="text-align:center; color:#64748b; padding:16px;">No vocabulary items to consolidate.</li>';
+    return;
+  }
+
+  mistakeCards.sort((a, b) => (b.againCount || 0) - (a.againCount || 0));
+
+  mistakeCards.forEach(item => {
+    const li = document.createElement("li");
+    li.className = "mistake-item";
+    li.innerHTML = `
+      <div class="mistake-info">
+        <span class="mistake-fr">${item.french}</span>
+        <span class="mistake-en">${item.english}</span>
+      </div>
+      <span class="mistake-badge">Again: ${item.againCount || 0} times</span>
+    `;
+    container.appendChild(li);
+  });
+}
+
+document.getElementById("flashcard").addEventListener("click", (e) => {
+  if (e.target.id === "tts-btn") return;
+  if (!isAnswerRevealed) {
+    revealAnswer();
+  } else {
+    speakFrench(currentCard.french);
+  }
+});
+
+document.getElementById("tts-btn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (currentCard) {
+    speakFrench(currentCard.french);
+  }
+});
+
+document.querySelectorAll(".btn-rating").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const quality = parseInt(btn.getAttribute("data-quality"));
+    handleRating(quality);
+  });
+});
+
+document.getElementById("tag-filter").addEventListener("change", () => {
+  loadNextCard();
+});
+
+document.getElementById("reset-btn").addEventListener("click", () => {
+  if (confirm("Are you sure you want to reset your learning progress?")) {
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    initializeData();
+    loadNextCard();
+  }
+});
+
+const modal = document.getElementById("notebook-modal");
+document.getElementById("open-notebook-btn").addEventListener("click", () => {
+  renderNotebook();
+  modal.classList.add("active");
+});
+
+const closeModal = () => modal.classList.remove("active");
+document.getElementById("close-modal-btn").addEventListener("click", closeModal);
+document.getElementById("close-modal-footer-btn").addEventListener("click", closeModal);
+modal.addEventListener("click", (e) => {
+  if (e.target === modal) closeModal();
+});
+
+document.addEventListener("keydown", (e) => {
+  if (modal.classList.contains("active")) return;
+
+  if (e.code === "Space") {
+    e.preventDefault();
+    if (!isAnswerRevealed) {
+      revealAnswer();
+    } else if (currentCard) {
+      speakFrench(currentCard.french);
+    }
+  } else if (isAnswerRevealed) {
+    if (e.key === "1") handleRating(1);
+    if (e.key === "2") handleRating(2);
+    if (e.key === "3") handleRating(3);
+    if (e.key === "4") handleRating(4);
+  }
+});
+
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.onvoiceschanged = () => {
+    window.speechSynthesis.getVoices();
+  };
+}
+
+initializeData();
+loadNextCard();
+</script>
+</body>
+</html>
